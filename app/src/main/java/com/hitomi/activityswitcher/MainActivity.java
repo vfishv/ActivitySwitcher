@@ -42,8 +42,16 @@ public class MainActivity extends AppCompatActivity {
         activitySwitcher = ActivitySwitcher.getInstance();
 
         relativeLayout = (RelativeLayout) findViewById(R.id.relayout);
-        btnNext = (Button) findViewById(R.id.btn_next);
-        tvPage = (TextView) findViewById(R.id.tv_page);
+        btnNext = findViewById(R.id.btn_next);
+        tvPage = findViewById(R.id.tv_page);
+
+        findViewById(R.id.btnShowSwitch).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activitySwitcher.showSwitch();
+            }
+        });
+
 
         relativeLayout.setBackgroundColor(bgColors[index]);
         tag = index;
