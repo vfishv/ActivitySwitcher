@@ -1,8 +1,11 @@
 package com.hitomi.activityswitcher;
 
+import android.Manifest;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.MotionEvent;
@@ -12,6 +15,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.hitomi.aslibrary.ActivitySwitcher;
+
+import pub.devrel.easypermissions.EasyPermissions;
+import pub.devrel.easypermissions.PermissionRequest;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -100,5 +106,28 @@ public class MainActivity extends AppCompatActivity {
 
     public int getTag() {
         return tag;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    final int RC_CAMERA_AND_LOCATION = 101;
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            EasyPermissions.requestPermissions(
+                    new PermissionRequest.Builder(this, RC_CAMERA_AND_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE)
+                            //.setRationale(R.string.camera_and_location_rationale)
+                            //.setPositiveButtonText(R.string.rationale_ask_ok)
+                            //.setNegativeButtonText(R.string.rationale_ask_cancel)
+                            //.setTheme(R.style.my_fancy_style)
+                            .build());
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.WallpaperManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -222,6 +223,14 @@ class ActivitySwitcherHelper {
         setContainerBackground();
     }
 
+    private boolean checkReadExternalPermission(Context context) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            String permission = android.Manifest.permission.READ_EXTERNAL_STORAGE;
+            return context.checkCallingOrSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+        }
+        return true;
+    }
+
     /**
      * 抽取系统桌面背景图, 设置为高斯模糊效果 <br/>
      *
@@ -232,6 +241,9 @@ class ActivitySwitcherHelper {
 
             @Override
             protected Bitmap doInBackground(Void... voids) {
+                if (!checkReadExternalPermission(appContext)) {
+                    return null;
+                }
                 // 获取系统桌面背景图片
                 WallpaperManager wallpaperManager = WallpaperManager.getInstance(appContext);
                 Drawable wallpaperDrawable = wallpaperManager.getDrawable();
@@ -252,13 +264,16 @@ class ActivitySwitcherHelper {
 
             @Override
             protected void onPostExecute(Bitmap bitmap) {
+                if(bitmap!=null){
                 ImageView imageView = new ImageView(appContext);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setImageBitmap(bitmap);
                 actControllerLayout.setBackgroundDrawable(imageView.getDrawable());
+                }
             }
         }.execute();
     }
+
 
     /**
      * 以当前 Activity 尺寸为参照物，居中裁剪 Bitmap
